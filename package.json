@@ -1,0 +1,12 @@
+{
+  "name": "mern-ecommerce",
+  "version": "1.0.0",
+  "description": "MERN Stack React Node MongoDB powered E-Commerce App with PayPal and Credit Card Payment along with Admin Dashboard",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
