@@ -1,22 +1,31 @@
 const express = require('express');
 const mongoose = require('mongoose');
-require('dotenv').config();
+const morgan = require('morgan');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 
+require('dotenv').config();
 // import routes
 const userRoutes = require('./routes/user');
 
-
-
+//app
 const app = express();
-const port = process.env.PORT || 8000;
 
-// routes middleware
-app.use('/api', userRoutes);
-
+//db
 mongoose
   .connect(process.env.DATABASE, {})
   .then(() => console.log("DB connected"))
   .catch((err) => console.log("DB Error => ", err));
+
+// routes middleware
+app.use('/api', userRoutes);
+
+  // middlewares
+app.use(morgan('dev'));
+app.use(bodyParser.json());
+app.use(cookieParser());
+
+const port = process.env.PORT || 8000;
 
 app.listen(port, () => {
     console.log(`server is running on port ${port}`);
