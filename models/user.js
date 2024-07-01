@@ -1,56 +1,59 @@
 const mongoose = require('mongoose');
 const crypto = require('crypto');
-const uuid = require('uuid');
+const { v1: uuidv1 }= require('uuid');
 
-const userSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        trim: true,
-        required: true,
-        maxLength: 32
+const userSchema = new mongoose.Schema(
+    {
+        name: {
+            type: String,
+            trim: true,
+            required: true,
+            maxLength: 32
+        },
+        email: {
+            type: String,
+            trim: true,
+            required: true,
+            unique: true
+        },
+        hashed_password: {
+            type: String,
+            required: true,
+        },
+        about: {
+            type: String,
+            trim: true,
+        },
+        salt: String,
+        role: {
+            type: Number,
+            default: 0
+        },
+        history: {
+            type: Array,
+            default: []
+        }
     },
-    email: {
-        type: String,
-        trim: true,
-        required: true,
-        unique: true
-    },
-    hashed_password: {
-        type: String,
-        required: true,
-    },
-    about: {
-        type: String,
-        trim: true,
-    },
-    salt: String,
-    role: {
-        type: Number,
-        default: 0
-    },
-    history: {
-        type: Array,
-        default: []
-    }
-},
-{ timestamps: true }
+    { timestamps: true }
 );
 
 // virtual field
-userSchema.virtual('password')
-.set((password) => {
-    this._password = password
-    this.salt = uuid()
-    this.hashed_password = this.encryptPassword(password)
-})
-.get(function() {
-    return this._password;
-});
+userSchema
+    .virtual('password')
+    .set(function(password) {
+        this._password = password;
+        this.salt = uuidv1();
+        this.hashed_password = this.encryptPassword(password);
+    })
+    .get(function() {
+        return this._password;
+    });
 
 userSchema.methods = {
-    // authenticate: function(plainText) {
-    //     return this.encryptPassword(plainText) === this.hashed_password;
-    // },
+    authenticate: function(plainText) {
+        return this.encryptPassword(plainText) === this.hashed_password;
+    },
+
     encryptPassword: function(password) {
         if (!password) return '';
         try {
@@ -62,6 +65,6 @@ userSchema.methods = {
             return '';
         }
     }
-}
+};
 
 module.exports = mongoose.model('User', userSchema);
