@@ -2,18 +2,15 @@ const User = require('../models/user');
 
 exports.signup = async (req, res) => {
     try {
-        const user = new User(req.body);
+        let user = new User(req.body);
         
-        // Await the Promise returned by .save()
-        const savedUser = await user.save();
-
+        user = await user.save();
         res.status(200).json({
-            message: "Created",
-            user: savedUser,
+            user
         });
     } catch (err) {
         res.status(500).json({
-            message: err.errmsg
+            err
         });
     }
 };
