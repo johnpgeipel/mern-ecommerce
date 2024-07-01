@@ -3,9 +3,7 @@ const User = require('../models/user');
 exports.signup = async (req, res) => {
     try {
         const user = new User(req.body);
-        // console.log("req.body", req.body);
-        // console.log("user", user);
-
+        
         // Await the Promise returned by .save()
         const savedUser = await user.save();
 
