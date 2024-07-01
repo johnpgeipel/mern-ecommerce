@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+const cors = require("cors");
 const cookieParser = require('cookie-parser');
 
 require('dotenv').config();
@@ -11,19 +12,22 @@ const userRoutes = require('./routes/user');
 //app
 const app = express();
 
+app.use(cors({ origin: true, credentials: true }));
+
 //db
 mongoose
   .connect(process.env.DATABASE, {})
   .then(() => console.log("DB connected"))
   .catch((err) => console.log("DB Error => ", err));
 
-// routes middleware
-app.use('/api', userRoutes);
-
   // middlewares
 app.use(morgan('dev'));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+  // routes middleware
+app.use('/api', userRoutes);
 
 const port = process.env.PORT || 8000;
 

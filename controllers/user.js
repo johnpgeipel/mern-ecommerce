@@ -1,16 +1,19 @@
 const User = require('../models/user');
 
-exports.signup = (req, res) => {
-    console.log("req.body", req.body);
-    const user = new User(req.body);
-    user.save((err, user) => {
-        if(err) {
-            return res.status(400).json({
-                err
-            })
-        }
-        res.json({
-            user
+exports.signup = async (req, res) => {
+    try {
+        const user = new User(req.body);
+        
+        // Await the Promise returned by .save()
+        const savedUser = await user.save();
+
+        res.status(200).json({
+            message: "Created",
+            user: savedUser,
         });
-    })
+    } catch (err) {
+        res.status(500).json({
+            message: err.errmsg
+        });
+    }
 };
