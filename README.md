@@ -6,7 +6,3 @@ https://www.udemy.com/course/react-node-ecommerce/learn/lecture/14929658#overvie
 
 https://github.com/kaloraat/react-node-ecommerce/tree/master
 
-mongoose
-  .connect(process.env.DATABASE, {})
-  .then(() => console.log("DB connected"))
-  .catch((err) => console.log("DB Error => ", err));
