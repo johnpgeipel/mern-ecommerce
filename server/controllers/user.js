@@ -1,10 +1,9 @@
 const User = require('../models/user');
-const jwt = require('express-jwt'); // generate signed token
+const jwt = require('jsonwebtoken'); // generate signed token
 const expressJwt = require('express-jwt'); // for authorization check
 const { errorHandler } = require('../helpers/dbErrorHandler');
 
 exports.signup = async (req, res) => {
-    // console.log("req.body", req.body);
     try {
         let user = new User(req.body);
 
@@ -22,37 +21,25 @@ exports.signup = async (req, res) => {
 };
 
 exports.signin = async (req, res) => {
-    // find the user based on email
-    try {
-        const { email, password } = req.body;
-        let user = await User.findOne({email})
-        res.json({
-            user
-        });
-        
-        
-    } catch (err) {
-        res.json({
-            err: errorHandler(err)
-        });
-    }
-
-        // const { email, password } = req.body;
-        // User.findOne({ email })
-        //     .then((user) => {
-        //         console.log(user)
-        //         res.json({
-        //             user
-        //         })
-        //     })
-        // .catch((err) => {
-        //     res.json({
-        //         err: errorHandler(err)
-        //     });
-        // })
-
-   
-
+    const { email, password } = req.body;
   
+    try {
+        const user = await User.findOne({ email });
     
-}
+        if (!user) {
+            return res.status(400).json({ error: 'User with that email does not exist. Please signup' });
+        }
+    
+        if (!user.authenticate(password)) {
+            return res.status(401).json({ error: 'Email and password dont match'});
+        }
+    
+        const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
+        res.cookie('t', token, { expire: new Date() + 9999 });
+    
+        const { _id, name, role } = user;
+        return res.json({ token, user: { _id, email, name, role } });
+    } catch (err) {
+        return res.status(400).json({ error: 'Database error' });
+    }
+};
