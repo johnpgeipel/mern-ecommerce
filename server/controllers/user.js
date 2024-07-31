@@ -43,3 +43,8 @@ exports.signin = async (req, res) => {
         return res.status(400).json({ error: 'Database error' });
     }
 };
+
+exports.signout = (req, res) => {
+    res.clearCookie('t');
+    res.json({ message: 'Signout success' });
+}
