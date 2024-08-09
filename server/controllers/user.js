@@ -1,45 +1,18 @@
-const User = require('../models/user');
-const jwt = require('jsonwebtoken'); // generate signed token
-const expressJwt = require('express-jwt'); // for authorization check
-const { errorHandler } = require('../helpers/dbErrorHandler');
+const User = require('../models/user')
 
-exports.signup = async (req, res) => {
+exports.userById = async (req, res, next, id) => {
     try {
-        let user = new User(req.body);
+        const user = await User.findById(id)
 
-        user = await user.save();
-        user.salt = undefined;
-        user.hashed_password = undefined;
-        res.json({
-            user
-        });
-    } catch (err) {
-        res.json({
-            err: errorHandler(err)
-        });
-    }
-};
-
-exports.signin = async (req, res) => {
-    const { email, password } = req.body;
-  
-    try {
-        const user = await User.findOne({ email });
-    
         if (!user) {
-            return res.status(400).json({ error: 'User with that email does not exist. Please signup' });
-        }
-    
-        if (!user.authenticate(password)) {
-            return res.status(401).json({ error: 'Email and password dont match'});
-        }
-    
-        const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
-        res.cookie('t', token, { expire: new Date() + 9999 });
-    
-        const { _id, name, role } = user;
-        return res.json({ token, user: { _id, email, name, role } });
+            return res.status(400).json({
+                error: 'User not found'
+            })
+        };
+        
+        req.profile = user;
+        next();
     } catch (err) {
-        return res.status(400).json({ error: 'Database error' });
+        return res.status(400).json({ error: 'No user by that ID' });
     }
 };
