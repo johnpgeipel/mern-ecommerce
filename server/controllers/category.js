@@ -9,7 +9,7 @@ exports.create = async (req, res) => {
             data
         });
 
-    } catch(err) {
+    } catch (err) {
         return res.status(400).json({
             error: errorHandler(err)
         });
