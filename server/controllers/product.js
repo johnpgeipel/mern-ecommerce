@@ -4,6 +4,23 @@ const fs = require('fs');
 const Product = require('../models/product');
 const { errorHandler } = require('../helpers/dbErrorHandler');
 
+exports.productById = (req, res, next, id) => {
+    Product.findById(id).exec((err, product) => {
+        if(err || !product) {
+            return res.status(400).json({
+                error: 'Product not found'
+            });
+        }
+        req.product = product;
+        next();
+    });
+};
+
+exports.read = (req, res) => {
+    req.product.photo = undefined;
+    return res.json(req.product);
+}
+
 exports.create = (req, res) => {
     const form = formidable({});
 
@@ -15,6 +32,7 @@ exports.create = (req, res) => {
                 error: 'All fields are required'
             });
         }
+
         // fixes values being returned as arrays in Postman form-data
         const nameValue = fields.name[0],
         descriptionValue = fields.description[0],
@@ -37,10 +55,11 @@ exports.create = (req, res) => {
               return res.status(400).json({
                 error: "Image should be less than 1mb in size",
               });
-            }
+            };
             product.photo.data = fs.readFileSync(files.photo[0].filepath);
             product.photo.contentType = files.photo[0].mimetype;
         }
+
         // async/await to fix mongodb callback
         try {
             const data = await product.save();
