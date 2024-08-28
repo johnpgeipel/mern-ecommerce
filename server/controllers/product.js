@@ -4,16 +4,21 @@ const fs = require('fs');
 const Product = require('../models/product');
 const { errorHandler } = require('../helpers/dbErrorHandler');
 
-exports.productById = (req, res, next, id) => {
-    Product.findById(id).exec((err, product) => {
-        if(err || !product) {
+exports.productById = async (req, res, next, id) => {
+    try {
+        const product = await Product.findById(id);
+        if (!product) {
             return res.status(400).json({
                 error: 'Product not found'
             });
         }
-        req.product = product;
+        req.product = product;   
         next();
-    });
+    } catch (err) {
+        return res.status(400).json({   
+            error: 'Product not found'
+        });
+    }
 };
 
 exports.read = (req, res) => {
