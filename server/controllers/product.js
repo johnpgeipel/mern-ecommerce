@@ -21,7 +21,7 @@ function setFieldsValues(fields) {
         fields.shipping = shippingValue;
     return fields;
 }
-
+// checks photo file size, updates product.photo data
 function setProductPhotoData(files, product) {
     if (files.photo) {
         if (files.photo[0].size > 1000000) {
