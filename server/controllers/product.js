@@ -92,11 +92,11 @@ exports.create = (req, res) => {
 exports.deleteOne = async (req, res) => {
     try {
         const product = req.product;
-        console.log(product);
+        // console.log(product);
         const deletedProduct = await product.deleteOne();
         res.json({
             deletedProduct,
-            'message': 'Product successfully removed'
+            message: 'Product successfully removed'
         });
     } catch (err) {
         return res.status(400).json({
